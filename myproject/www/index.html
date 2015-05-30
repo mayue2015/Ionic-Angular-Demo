@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html ng-app="ionicApp">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+    <title></title>
+
+    <link href="lib/ionic/css/ionic.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+
+    <!-- IF using Sass (run gulp sass first), then uncomment below and remove the CSS includes above
+    <link href="css/ionic.app.css" rel="stylesheet">
+    -->
+
+    <!-- ionic/angularjs js -->
+    <script src="lib/ionic/js/ionic.bundle.js"></script>
+
+    <!-- cordova script (this will be a 404 during development) -->
+    <script src="cordova.js"></script>
+
+    <!-- your app's js -->
+    <!-- <script src="js/app.js"></script>
+    <script src="js/controllers.js"></script>
+    <script src="js/services.js"></script> -->
+    <script type="text/javascript" src="js/index.js"></script>
+  </head>
+
+  <!-- <body ng-app="starter">
+    <ion-nav-bar class="bar-stable">
+      <ion-nav-back-button>
+      </ion-nav-back-button>
+    </ion-nav-bar>
+    <ion-nav-view></ion-nav-view>
+  </body> -->
+    <body ng-controller="MainCtrl">
+
+    <ion-nav-view></ion-nav-view>
+
+    <script id="templates/event-menu.html" type="text/ng-template">
+      <ion-side-menus enable-menu-with-back-views="false">
+
+        <ion-side-menu-content>
+          <ion-nav-bar class="bar-assertive">
+            <ion-nav-back-button>
+            </ion-nav-back-button>
+
+            <ion-nav-buttons side="left">
+              <button class="button button-icon button-clear ion-navicon" menu-toggle="left">
+              </button>
+            </ion-nav-buttons>
+          </ion-nav-bar>
+
+          <ion-nav-view name="menuContent"></ion-nav-view>
+        </ion-side-menu-content> 
+
+        <ion-side-menu side="left">
+          <ion-header-bar class="bar-assertive">
+            <h1 class="title">菜单</h1>
+          </ion-header-bar>
+          <ion-content>
+            <ul class="list">
+              <!-- Note each link has the 'menu-close' attribute so the menu auto closes when clicking on one of these links -->
+              <a href="#/event/check-in" class="item item-icon-left" menu-close><i class="icon ion-ios-gear-outline"></i>账号</a>
+              <a href="#/event/attendees" class="item item-icon-left" menu-close><i class="icon ion-ios-cart-outline"></i>商品</a>
+              <a ui-sref="eventmenu.login" class="item item-icon-left" menu-close><i class="icon ion-log-in"></i>登录</a>
+              <a ui-sref="eventmenu.login" class="item item-icon-left" menu-close><i class="icon ion-log-out"></i>退出</a>
+            </ul>
+          </ion-content>
+        </ion-side-menu>
+
+         <ion-side-menu side="right">
+          <ion-header-bar class="bar-assertive">
+            <h1 class="title">我的</h1>
+          </ion-header-bar>
+          <ion-content>
+            <ul class="list">
+              <!-- Note each link has the 'menu-close' attribute so the menu auto closes when clicking on one of these links -->
+
+              <a class="item">
+                <img ng-src="/img/login-logo.png" width="100%" height="100%">
+              </a>
+
+              <a href="#/event/check-in" class="item item-icon-left" menu-close><i class="icon ion-ios-home-outline"></i>我的餐馆</a>
+              <a href="#/event/check-in" class="item item-icon-left" menu-close><i class="icon ion-ios-list-outline"></i>我的订单</a>
+              <a class="item item-icon-left"><i class="icon ion-ios-telephone-outline"></i>客服热线：18095116883</a>
+             
+            </ul>
+          </ion-content>
+        </ion-side-menu>
+
+      </ion-side-menus>
+    </script>
+
+    <script id="templates/home.html" type="text/ng-template">
+      <ion-view view-title="餐馆无忧">
+        <ion-content class="padding">
+          
+        </ion-content>
+      </ion-view>
+
+       <ion-tabs class="tabs-icon-top tabs-assertive">
+
+        <ion-tab title="首页" icon="ion-home" href="#/event/welcome">
+          <ion-nav-view name="home-tab"></ion-nav-view>
+        </ion-tab>
+
+        <ion-tab title="分类" icon="ion-ios-information" href="#/tab/about">
+          <ion-nav-view name="about-tab"></ion-nav-view>
+        </ion-tab>
+
+        <ion-tab title="常购清单" icon="ion-star" ui-sref="tabs.contact">
+          <ion-nav-view name="contact-tab"></ion-nav-view>
+        </ion-tab>
+
+        <ion-tab title="我的" icon="ion-ios-world" ui-sref="tabs.contact">
+          <ion-nav-view name="contact-tab"></ion-nav-view>
+        </ion-tab>
+      </ion-tabs>
+    </script>
+
+    <script id="templates/check-in.html" type="text/ng-template">
+      <ion-view view-title="校验">
+        <ion-content>
+          <ion-refresher on-refresh="doRefresh()">
+          </ion-refresher>
+
+          <form class="list" ng-show="showForm">
+            <div class="item item-divider">
+              个人信息
+            </div>
+            <label class="item item-input">
+              <input type="text" placeholder="姓名" ng-model="attendee.firstname">
+            </label>
+            <label class="item item-input">
+              <input type="text" placeholder="电话" ng-model="attendee.lastname">
+            </label>
+            <div class="item item-divider">
+              大小
+            </div>
+            <ion-radio ng-repeat="shirtSize in shirtSizes"
+                       ng-value="shirtSize.value"
+                       ng-model="attendee.shirtSize">
+              {{ shirtSize.text }}
+            </ion-radio>
+            <div class="item item-divider">
+              设置
+            </div>
+            <ion-toggle ng-model="attendee.vegetarian" toggle-class="toggle-assertive">
+              开启
+            </ion-toggle>
+            <ion-checkbox class="checkbox-assertive">
+              HTML
+            </ion-checkbox>
+            <div class="padding">
+              <button class="button button-full button-assertive" ng-click="submit()">提交</button>
+            </div>
+          </form>
+
+          <div ng-hide="showForm">
+            <pre ng-bind="attendee | json"></pre> 
+            <a href="#/event/attendees">返回</a>
+          </div>
+        </ion-content>
+      </ion-view>
+    </script>
+
+    <script id="templates/attendees.html" type="text/ng-template">
+      <ion-view view-title="商品">
+        <ion-content>
+          <div class="list">
+            <div class="item item-thumbnail-left" ng-repeat="msg in dataJson">
+              <img ng-src="{{msg.mediaFile.url}}">
+              <h2>{{ msg.name }}</h2>
+              <h4><font color="red">{{msg.id | currency : "￥"}}</font></h4>
+              <a class="button button-outline button-small button-assertive">加入购物车</a>
+            </div>
+          </div>
+        </ion-content>
+      </ion-view>
+    </script>
+
+    <script id="templates/login.html" type="text/ng-template">
+        <ion-view view-title="登录">
+        <ion-content>
+          <div class="list list-inset">
+            <label class="item item-input">
+              <span class="input-label">用户名</span>
+              <input type="text" ng-model="user.username">
+            </label>
+            <label class="item item-input">
+              <span class="input-label">密码</span>
+              <input type="password" ng-model="user.password">
+            </label>
+          </div>
+          <div class="padding">
+            <button class="button button-block button-assertive" ng-click="login()">
+              登录
+            </button>
+            <button class="button button-block button-outline button-assertive" ng-click="login()">
+              注册
+            </button>
+          </div>
+        </ion-content>
+      </ion-view>
+    </script>
+
+    <script id="templates/welcome.html" type="text/ng-template">
+      <ion-view view-title="首页">
+        <ion-content>
+            <p><img src="http://7xijms.com2.z0.glb.qiniucdn.com/chengbeishichang.png" style="width:100%"></p>
+        </ion-content>
+      </ion-view>
+    </script>
+
+  </body>
+
+</html>
