@@ -1,0 +1,3 @@
+# Ionic-Angular-Demo
+my first ionic and angular app demo
+learning more...
